@@ -71,8 +71,23 @@
   h1 .accent{color:var(--emerald);}
   .lede{color:var(--muted);font-size:14.5px;margin:0 0 24px;max-width:52ch;}
 
-  .step{margin-bottom:16px;}
-  .step-label{
+  .updatetest{
+    display:flex;align-items:center;gap:13px;
+    background:linear-gradient(135deg,rgba(53,208,127,.16),rgba(231,197,131,.10));
+    border:1px solid var(--emerald);
+    border-radius:14px;padding:14px 16px;margin:0 0 26px;
+    box-shadow:0 0 0 3px var(--emerald-glow);
+    animation:rise .3s ease;
+  }
+  .ut-badge{
+    flex:0 0 auto;width:30px;height:30px;border-radius:50%;
+    background:var(--emerald);color:#07160D;
+    display:grid;place-items:center;font-weight:700;font-size:16px;
+  }
+  .ut-text{font-size:13px;color:var(--text);line-height:1.45;}
+  .ut-text strong{font-family:var(--disp);font-weight:600;color:var(--emerald);}
+
+  .step{margin-bottom:16px;}  .step-label{
     display:flex;align-items:center;gap:9px;
     font-family:var(--mono);font-size:11px;letter-spacing:.06em;
     color:var(--muted);text-transform:uppercase;margin-bottom:9px;
@@ -297,6 +312,14 @@
   <h1>Pull one brand from your <span class="accent">monthly sales</span> report.</h1>
   <p class="lede">Drop the report your POS exports, pick a brand, and download a clean spreadsheet with just that brand's rows and the columns you keep.</p>
 
+  <div class="updatetest">
+    <div class="ut-badge">✓</div>
+    <div class="ut-text">
+      <strong>Auto-update is working.</strong>
+      This banner did not exist in the version you installed — it arrived from GitHub on its own. (v1.1.1)
+    </div>
+  </div>
+
   <div class="step" id="step1">
     <div class="step-label"><span class="step-num">1</span> Load your sales report</div>
 
@@ -377,7 +400,7 @@
   <div class="foot">
     Runs entirely on this computer — nothing is uploaded anywhere.
     <span class="dot">·</span> Works offline
-    <span class="dot">·</span> <span id="appver">v1.1.0</span>
+    <span class="dot">·</span> <span id="appver">v1.1.1</span>
   </div>
 
 </div>
