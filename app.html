@@ -377,7 +377,7 @@
   <div class="foot">
     Runs entirely on this computer — nothing is uploaded anywhere.
     <span class="dot">·</span> Works offline
-    <span class="dot">·</span> <span id="appver">v1.0.0</span>
+    <span class="dot">·</span> <span id="appver">v1.1.0</span>
   </div>
 
 </div>
@@ -627,10 +627,15 @@ var o=[];var l=Array.isArray(e);for(f=n.s.c;f<=n.e.c;++f)s[f]=ya(f);for(var c=n.
   }
 
   // ── date filter engine ──────────────────────────────────────────────
-  // Extract {y,m,d} (m is 1-12) from a cell, timezone-safe.
+  // Extract {y,m,d} (m is 1-12) from a cell.
+  // IMPORTANT: SheetJS builds Date objects from Excel's wall-clock time using
+  // the LOCAL timezone (a 6/5 6:36pm sale becomes Fri Jun 05 18:36 local).
+  // So we must read them back with LOCAL getters. Using getUTC* here shifts
+  // any evening sale to the next day west of Greenwich — e.g. in California
+  // every sale after ~5pm landed on the wrong date.
   function cellDay(v){
     if(v==null||v==="") return null;
-    if(v instanceof Date && !isNaN(v)) return {y:v.getUTCFullYear(), m:v.getUTCMonth()+1, d:v.getUTCDate()};
+    if(v instanceof Date && !isNaN(v)) return {y:v.getFullYear(), m:v.getMonth()+1, d:v.getDate()};
     if(typeof v==="number" && XLSX.SSF && XLSX.SSF.parse_date_code){
       const o=XLSX.SSF.parse_date_code(v); if(o && o.y) return {y:o.y, m:o.m, d:o.d};
     }
