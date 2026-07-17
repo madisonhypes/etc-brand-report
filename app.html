@@ -162,24 +162,45 @@
   .stat .l{font-size:11px;color:var(--muted);margin-top:6px;letter-spacing:.03em;}
 
   .combo{position:relative;}
-  .combo input{
-    width:100%;
-    font-family:var(--body);font-size:15px;color:var(--text);
+  .field{
+    display:flex;flex-wrap:wrap;align-items:center;gap:6px;
     background:var(--panel);
     border:1px solid var(--line);
     border-radius:12px;
-    padding:14px 44px 14px 15px;
+    padding:9px 44px 9px 10px;
+    min-height:50px;
+    cursor:text;
     transition:border-color .15s,box-shadow .15s;
   }
+  .field.focused{border-color:var(--emerald);box-shadow:0 0 0 3px var(--emerald-glow);}
+  .chips{display:contents;}
+  .chip{
+    display:inline-flex;align-items:center;gap:6px;
+    background:var(--emerald-glow);border:1px solid var(--emerald-deep);
+    color:var(--text);border-radius:8px;
+    padding:4px 6px 4px 9px;font-size:12.5px;line-height:1.3;
+    max-width:100%;
+  }
+  .chip-name{white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:190px;}
+  .chip-x{
+    display:grid;place-items:center;flex:0 0 auto;
+    width:16px;height:16px;border-radius:4px;border:none;cursor:pointer;
+    background:transparent;color:var(--muted);font-size:14px;line-height:1;padding:0;
+  }
+  .chip-x:hover{background:rgba(0,0,0,.25);color:var(--text);}
+  .combo input{
+    flex:1;min-width:130px;
+    font-family:var(--body);font-size:15px;color:var(--text);
+    background:transparent;border:none;outline:none;padding:4px 0;
+  }
   .combo input::placeholder{color:var(--muted-2);}
-  .combo input:focus{outline:none;border-color:var(--emerald);box-shadow:0 0 0 3px var(--emerald-glow);}
   .combo .chev{
-    position:absolute;right:14px;top:50%;transform:translateY(-50%);
+    position:absolute;right:14px;top:24px;transform:translateY(-50%);
     color:var(--muted);pointer-events:none;transition:transform .18s;
   }
   .combo.open .chev{transform:translateY(-50%) rotate(180deg);}
   .combo .clear{
-    position:absolute;right:40px;top:50%;transform:translateY(-50%);
+    position:absolute;right:38px;top:24px;transform:translateY(-50%);
     background:none;border:none;color:var(--muted);cursor:pointer;padding:4px;
     display:none;border-radius:6px;
   }
@@ -201,10 +222,17 @@
     font-family:var(--mono);font-size:10.5px;letter-spacing:.03em;color:var(--muted);
   }
   .opt{
-    padding:10px 12px;border-radius:8px;font-size:14px;cursor:pointer;
-    display:flex;align-items:center;justify-content:space-between;gap:10px;
+    padding:9px 12px;border-radius:8px;font-size:14px;cursor:pointer;
+    display:flex;align-items:center;gap:10px;
   }
-  .opt .cnt{font-family:var(--mono);font-size:11.5px;color:var(--muted);}
+  .opt-box{
+    flex:0 0 auto;width:16px;height:16px;border-radius:4px;
+    border:1.5px solid var(--line);display:grid;place-items:center;
+    color:transparent;font-size:11px;font-weight:700;
+  }
+  .opt.on .opt-box{background:var(--emerald);border-color:var(--emerald);color:#07160D;}
+  .opt-name{flex:1;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;}
+  .opt .cnt{font-family:var(--mono);font-size:11.5px;color:var(--muted);flex:0 0 auto;}
   .opt:hover,.opt.active{background:var(--emerald-glow);}
   .opt.active{outline:1px solid var(--emerald-deep);}
   .opt mark{background:transparent;color:var(--emerald);font-weight:600;}
@@ -312,14 +340,6 @@
   <h1>Pull one brand from your <span class="accent">monthly sales</span> report.</h1>
   <p class="lede">Drop the report your POS exports, pick a brand, and download a clean spreadsheet with just that brand's rows and the columns you keep.</p>
 
-  <div class="updatetest">
-    <div class="ut-badge">✓</div>
-    <div class="ut-text">
-      <strong>Auto-update is working.</strong>
-      This banner does not exist in the copy on your Desktop — it arrived from GitHub by itself. (v1.1.3)
-    </div>
-  </div>
-
 
   <div class="step" id="step1">
     <div class="step-label"><span class="step-num">1</span> Load your sales report</div>
@@ -350,14 +370,17 @@
   </div>
 
   <div class="step locked" id="step2">
-    <div class="step-label"><span class="step-num">2</span> <span id="step2label">Choose a brand</span></div>
+    <div class="step-label"><span class="step-num">2</span> <span id="step2label">Choose brands</span></div>
     <div class="combo" id="combo">
-      <input type="text" id="brandInput" placeholder="Type to search brands…" autocomplete="off" role="combobox" aria-expanded="false" aria-controls="brandList" />
-      <button class="clear" id="clearBtn" aria-label="Clear brand" title="Clear">
+      <div class="field" id="field">
+        <span class="chips" id="chips"></span>
+        <input type="text" id="brandInput" placeholder="Type to search brands…" autocomplete="off" role="combobox" aria-expanded="false" aria-controls="brandList" />
+      </div>
+      <button class="clear" id="clearBtn" aria-label="Clear all" title="Clear all">
         <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M18 6 6 18M6 6l12 12"/></svg>
       </button>
       <span class="chev" aria-hidden="true"><svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m6 9 6 6 6-6"/></svg></span>
-      <div class="list" id="brandList" role="listbox"></div>
+      <div class="list" id="brandList" role="listbox" aria-multiselectable="true"></div>
     </div>
   </div>
 
@@ -401,7 +424,7 @@
   <div class="foot">
     Runs entirely on this computer — nothing is uploaded anywhere.
     <span class="dot">·</span> Works offline
-    <span class="dot">·</span> <span id="appver">v1.1.3</span>
+    <span class="dot">·</span> <span id="appver">v1.2.0</span>
     <span class="dot">·</span> <span id="updstatus">checking for updates…</span>
   </div>
 
@@ -416,7 +439,7 @@
 // ══════════════════════════════════════════════════════════════════════
 (function(){
   "use strict";
-  var VERSION = "1.1.3";
+  var VERSION = "1.2.0";
   var BASE = "https://raw.githubusercontent.com/madisonhypes/etc-brand-report/main";
 
   function setStat(txt){
@@ -547,12 +570,13 @@ var o=[];var l=Array.isArray(e);for(f=n.s.c;f<=n.e.c;++f)s[f]=ya(f);for(var c=n.
         step1=$("step1"), step2=$("step2"), step3=$("step3"),
         combo=$("combo"), brandInput=$("brandInput"), brandList=$("brandList"),
         clearBtn=$("clearBtn"), go=$("go"), goText=$("goText"), status=$("status"),
+        field=$("field"), chips=$("chips"),
         step3date=$("step3date"), datewrap=$("datewrap"), dateBtn=$("dateBtn"),
         dateLabel=$("dateLabel"), calPop=$("calPop"), calMonths=$("calMonths"),
         calCount=$("calCount"), calPresets=$("calPresets"), calDone=$("calDone");
 
   let header=[], brandCol=-1, dataRows=[], brands=[], brandCounts={},
-      periodLabel="", periodFile="", selectedBrand="", activeIdx=-1, filtered=[],
+      periodLabel="", periodFile="", selectedBrands=new Set(), activeIdx=-1, filtered=[],
       filterKind="brand";
   // date-filter state
   let dateCol=-1, rowDayKey=[], dayCounts={}, allDays=[], selectedDays=new Set(),
@@ -671,7 +695,7 @@ var o=[];var l=Array.isArray(e);for(f=n.s.c;f<=n.e.c;++f)s[f]=ya(f);for(var c=n.
 
     // adapt step 2 to whichever column we're filtering on
     stItemsLabel.textContent = nounCap()+"s found";
-    step2label.textContent = "Choose a "+noun();
+    step2label.textContent = "Choose "+noun()+"s";
 
     // unique brands/vendors + counts
     brandCounts={};
@@ -682,7 +706,6 @@ var o=[];var l=Array.isArray(e);for(f=n.s.c;f<=n.e.c;++f)s[f]=ya(f);for(var c=n.
     if(!brands.length){ setStatus("Found the report, but the "+nounCap()+" Name column is empty. Is this the right export?","warn"); return; }
 
     step2.classList.remove("locked");
-    brandInput.placeholder="Type to search "+brands.length+" "+noun()+"s…";
     resetBrand();
 
     // date filter: show + render when the report has a usable date column
@@ -869,21 +892,26 @@ var o=[];var l=Array.isArray(e);for(f=n.s.c;f<=n.e.c;++f)s[f]=ya(f);for(var c=n.
     return {resolved, missing};
   }
 
-  // ── brand combobox ──
+  // ── brand/vendor multi-select ──
   function openList(q){
     const query=(q==null?brandInput.value:q).trim().toLowerCase();
     const matches=query?brands.filter(b=>b.toLowerCase().includes(query)):brands.slice();
     activeIdx=-1;
-    const nplural = nounCap()+(brands.length===1?"":"s");
+    const n=selectedBrands.size;
+    const sel = n ? n+" selected · " : "";
     const head = query
-      ? '<div class="listhead">'+matches.length+" of "+brands.length+" "+nounCap().toLowerCase()+"s match</div>"
-      : '<div class="listhead">All '+brands.length+" "+nounCap().toLowerCase()+"s · scroll or type to filter</div>";
+      ? '<div class="listhead">'+sel+matches.length+" of "+brands.length+" "+noun()+"s match</div>"
+      : '<div class="listhead">'+sel+"all "+brands.length+" "+noun()+"s · click to add or remove</div>";
     if(!matches.length){
       brandList.innerHTML=head+'<div class="empty">No '+noun()+' matches “'+esc(query)+'”.</div>';
     } else {
-      brandList.innerHTML=head+matches.map((b,i)=>
-        '<div class="opt" role="option" data-brand="'+esc(b)+'" data-i="'+i+'"><span>'+
-        hl(b,query)+'</span><span class="cnt">'+fmt(brandCounts[b])+' rows</span></div>').join("");
+      brandList.innerHTML=head+matches.map((b,i)=>{
+        const on=selectedBrands.has(b);
+        return '<div class="opt'+(on?" on":"")+'" role="option" aria-selected="'+on+'" data-brand="'+esc(b)+'" data-i="'+i+'">'+
+          '<span class="opt-box">✓</span>'+
+          '<span class="opt-name">'+hl(b,query)+'</span>'+
+          '<span class="cnt">'+fmt(brandCounts[b])+' rows</span></div>';
+      }).join("");
     }
     brandList.classList.add("show"); combo.classList.add("open"); brandInput.setAttribute("aria-expanded","true");
   }
@@ -891,21 +919,58 @@ var o=[];var l=Array.isArray(e);for(f=n.s.c;f<=n.e.c;++f)s[f]=ya(f);for(var c=n.
   function hl(text,q){ if(!q) return esc(text); const i=text.toLowerCase().indexOf(q); if(i<0) return esc(text);
     return esc(text.slice(0,i))+"<mark>"+esc(text.slice(i,i+q.length))+"</mark>"+esc(text.slice(i+q.length)); }
 
-  brandInput.addEventListener("focus",()=>{ if(brands.length) openList(); });
-  brandInput.addEventListener("input",()=>{ combo.classList.toggle("has-val",brandInput.value.length>0); selectedBrand=""; updateExport(); openList(); });
+  // chips render in the same order as the master list, so they never jump around
+  function renderChips(){
+    const chosen=brands.filter(b=>selectedBrands.has(b));
+    chips.innerHTML=chosen.map(b=>
+      '<span class="chip" data-brand="'+esc(b)+'">'+
+        '<span class="chip-name">'+esc(b)+'</span>'+
+        '<button class="chip-x" data-remove="'+esc(b)+'" aria-label="Remove '+esc(b)+'" title="Remove">×</button>'+
+      '</span>').join("");
+    combo.classList.toggle("has-val", selectedBrands.size>0);
+    brandInput.placeholder = selectedBrands.size
+      ? "Add another…"
+      : "Type to search "+brands.length+" "+noun()+"s…";
+  }
+
+  field.addEventListener("click",e=>{ if(!e.target.closest(".chip-x")) brandInput.focus(); });
+  brandInput.addEventListener("focus",()=>{ field.classList.add("focused"); if(brands.length) openList(); });
+  brandInput.addEventListener("blur",()=>field.classList.remove("focused"));
+  brandInput.addEventListener("input",()=>openList());
   brandInput.addEventListener("keydown",e=>{
     const opts=[...brandList.querySelectorAll(".opt")];
     if(e.key==="ArrowDown"){ e.preventDefault(); if(!brandList.classList.contains("show"))openList(); activeIdx=Math.min(activeIdx+1,opts.length-1); paint(opts); }
     else if(e.key==="ArrowUp"){ e.preventDefault(); activeIdx=Math.max(activeIdx-1,0); paint(opts); }
-    else if(e.key==="Enter"){ e.preventDefault(); if(activeIdx>=0&&opts[activeIdx]) choose(opts[activeIdx].dataset.brand); else tryExact(); }
+    else if(e.key==="Enter"){ e.preventDefault(); if(activeIdx>=0&&opts[activeIdx]) toggleBrand(opts[activeIdx].dataset.brand); else tryExact(); }
     else if(e.key==="Escape"){ closeList(); }
+    else if(e.key==="Backspace" && brandInput.value===""){
+      const chosen=brands.filter(b=>selectedBrands.has(b));
+      if(chosen.length){ toggleBrand(chosen[chosen.length-1]); }
+    }
   });
   function paint(opts){ opts.forEach((o,i)=>o.classList.toggle("active",i===activeIdx)); if(opts[activeIdx]) opts[activeIdx].scrollIntoView({block:"nearest"}); }
-  brandList.addEventListener("click",e=>{ const o=e.target.closest(".opt"); if(o) choose(o.dataset.brand); });
-  function tryExact(){ const hit=brands.find(b=>b.toLowerCase()===brandInput.value.trim().toLowerCase()); if(hit) choose(hit); }
-  function choose(brand){ selectedBrand=brand; brandInput.value=brand; combo.classList.add("has-val"); closeList(); updateExport(); }
-  clearBtn.addEventListener("click",()=>{ resetBrand(); brandInput.focus(); openList(); });
-  function resetBrand(){ selectedBrand=""; brandInput.value=""; combo.classList.remove("has-val"); closeList(); updateExport(); }
+
+  brandList.addEventListener("click",e=>{ const o=e.target.closest(".opt"); if(o) toggleBrand(o.dataset.brand); });
+  chips.addEventListener("click",e=>{
+    const x=e.target.closest(".chip-x");
+    if(x){ e.stopPropagation(); toggleBrand(x.dataset.remove); }
+  });
+
+  function tryExact(){ const hit=brands.find(b=>b.toLowerCase()===brandInput.value.trim().toLowerCase()); if(hit) toggleBrand(hit); }
+
+  function toggleBrand(brand){
+    if(!brand) return;
+    if(selectedBrands.has(brand)) selectedBrands.delete(brand);
+    else selectedBrands.add(brand);
+    brandInput.value="";              // clear the search so the next one is easy to find
+    renderChips();
+    updateExport();
+    if(brands.length) openList();     // stay open — they may want several
+    brandInput.focus();
+  }
+
+  clearBtn.addEventListener("click",e=>{ e.stopPropagation(); resetBrand(); brandInput.focus(); openList(); });
+  function resetBrand(){ selectedBrands=new Set(); brandInput.value=""; renderChips(); closeList(); updateExport(); }
   document.addEventListener("click",e=>{ if(!combo.contains(e.target)) closeList(); });
 
   // ── date filtering helpers ──
@@ -931,15 +996,25 @@ var o=[];var l=Array.isArray(e);for(f=n.s.c;f<=n.e.c;++f)s[f]=ya(f);for(var c=n.
     return {narrowed:true, phrase:sel+" days", tag:sel+"days"};
   }
 
+  // label for the chosen brands/vendors
+  function chosenList(){ return brands.filter(b=>selectedBrands.has(b)); }
+  function brandSummary(){
+    const chosen=chosenList(), n=chosen.length;
+    if(n===0) return {n:0, phrase:"", tag:""};
+    if(n===1) return {n:1, phrase:chosen[0], tag:safe(chosen[0])};
+    if(n===2) return {n:2, phrase:chosen[0]+" + "+chosen[1], tag:safe(chosen[0])+"_and_"+safe(chosen[1])};
+    return {n:n, phrase:n+" "+noun()+"s", tag:n+"_"+nounCap()+"s"};
+  }
+
   // ── export enable + preview ──
   function updateExport(){
-    if(!selectedBrand){
+    if(selectedBrands.size===0){
       filtered=[]; go.disabled=true; goText.textContent="Select a "+noun()+" to export";
-      if(brands.length) setStatus("Pick a "+noun()+" from the list above.","muted");
+      if(brands.length) setStatus("Pick one or more "+noun()+"s from the list above.","muted");
       return;
     }
-    filtered=dataRows.filter((r,i)=>String(r[brandCol]==null?"":r[brandCol]).trim()===selectedBrand && datePass(i));
-    const ds=dateSummary();
+    filtered=dataRows.filter((r,i)=> selectedBrands.has(String(r[brandCol]==null?"":r[brandCol]).trim()) && datePass(i));
+    const ds=dateSummary(), bs=brandSummary();
     const {resolved}=resolveKeep(header);
     const cols=resolved.length||header.length;
     step3.classList.remove("locked");
@@ -948,17 +1023,20 @@ var o=[];var l=Array.isArray(e);for(f=n.s.c;f<=n.e.c;++f)s[f]=ya(f);for(var c=n.
       goText.textContent = ds.empty ? "Select at least one date" : "No rows match";
       setStatus(ds.empty
         ? "Now choose your dates in step 3 — tap days on the calendar, or hit All for the whole month."
-        : "No "+esc(selectedBrand)+" rows"+(ds.narrowed?" in "+esc(ds.phrase):"")+". Try different dates or a different "+noun()+".","warn");
+        : "No rows for "+esc(bs.phrase)+(ds.narrowed?" in "+esc(ds.phrase):"")+". Try different dates or "+noun()+"s.","warn");
       return;
     }
     go.disabled=false;
-    goText.textContent="Export "+fmt(filtered.length)+" "+selectedBrand+" row"+(filtered.length===1?"":"s");
-    setStatus(fmt(filtered.length)+" row"+(filtered.length===1?"":"s")+" · "+cols+" columns"+(ds.narrowed?" · "+esc(ds.phrase):"")+" — ready to export.","muted");
+    goText.textContent = bs.n===1
+      ? "Export "+fmt(filtered.length)+" "+chosenList()[0]+" row"+(filtered.length===1?"":"s")
+      : "Export "+fmt(filtered.length)+" row"+(filtered.length===1?"":"s")+" from "+bs.n+" "+noun()+"s";
+    setStatus(fmt(filtered.length)+" row"+(filtered.length===1?"":"s")+" · "+cols+" columns · "+esc(bs.phrase)
+      +(ds.narrowed?" · "+esc(ds.phrase):"")+" — ready to export.","muted");
   }
 
   // ── build + download ──
   go.addEventListener("click",()=>{
-    if(!selectedBrand||!filtered.length) return;
+    if(selectedBrands.size===0||!filtered.length) return;
     try{
       let {resolved}=resolveKeep(header);
       const keepIdx = resolved.length ? resolved.map(r=>r.idx) : header.map((_,i)=>i);
@@ -969,13 +1047,16 @@ var o=[];var l=Array.isArray(e);for(f=n.s.c;f<=n.e.c;++f)s[f]=ya(f);for(var c=n.
       const ws=XLSX.utils.aoa_to_sheet(aoa,{cellDates:true});
       ws["!cols"]=outHeader.map(h=>({wch:Math.min(Math.max(String(h).length+2,12),42)}));
       const wb=XLSX.utils.book_new();
-      const sheetName=selectedBrand.slice(0,28).replace(/[\\\/\?\*\[\]:]/g,"")||"Brand";
+      const bs=brandSummary();
+      const sheetName=(bs.n===1 ? chosenList()[0].slice(0,28) : bs.n+" "+nounCap()+"s")
+                        .replace(/[\\\/\?\*\[\]:]/g,"")||"Selected";
       XLSX.utils.book_append_sheet(wb,ws,sheetName);
 
       const ds=dateSummary();
-      const fname=safe(selectedBrand)+"_Sales"+(periodFile?"_"+safe(periodFile):"")+(ds.tag?"_"+safe(ds.tag):"")+".xlsx";
+      const fname=safe(bs.tag)+"_Sales"+(periodFile?"_"+safe(periodFile):"")+(ds.tag?"_"+safe(ds.tag):"")+".xlsx";
       XLSX.writeFile(wb,fname);
-      setStatus("Saved <code>"+esc(fname)+"</code> — "+fmt(filtered.length)+" rows × "+outHeader.length+" columns"+(ds.narrowed?" ("+esc(ds.phrase)+")":"")+".","ok");
+      setStatus("Saved <code>"+esc(fname)+"</code> — "+fmt(filtered.length)+" rows × "+outHeader.length+" columns"
+        +(bs.n>1?" ("+bs.n+" "+noun()+"s)":"")+(ds.narrowed?", "+esc(ds.phrase):"")+".","ok");
     }catch(err){ console.error(err); setStatus("Export hit a snag. Try again, or reload the report.","err"); }
   });
 
